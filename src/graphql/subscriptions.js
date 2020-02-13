@@ -37,3 +37,72 @@ export const onDeleteSensor = `subscription OnDeleteSensor(
   }
 }
 `;
+export const onCreateAlarma = `subscription OnCreateAlarma($Row: String, $payload: AWSJSON) {
+  onCreateAlarma(Row: $Row, payload: $payload) {
+    Row
+    payload
+  }
+}
+`;
+export const onUpdateAlarma = `subscription OnUpdateAlarma($Row: String, $payload: AWSJSON) {
+  onUpdateAlarma(Row: $Row, payload: $payload) {
+    Row
+    payload
+  }
+}
+`;
+export const onDeleteAlarma = `subscription OnDeleteAlarma($Row: String) {
+  onDeleteAlarma(Row: $Row) {
+    Row
+    payload
+  }
+}
+`;
+export const onCreateSensorIot = `subscription OnCreateSensorIot(
+  $PositionInRow: Int
+  $Row: String
+  $payload: AWSJSON
+) {
+  onCreateSensorIOT(
+    PositionInRow: $PositionInRow
+    Row: $Row
+    payload: $payload
+  ) {
+    PositionInRow
+    Row
+    payload
+  }
+}
+`;
+export const onUpdateSensorIot = `subscription OnUpdateSensorIot(
+  $PositionInRow: Int
+  $Row: String
+  $payload: AWSJSON
+) {
+  onUpdateSensorIOT(
+    PositionInRow: $PositionInRow
+    Row: $Row
+    payload: $payload
+  ) {
+    PositionInRow
+    Row
+    payload
+  }
+}
+`;
+export const onDeleteSensorIot = `subscription OnDeleteSensorIot(
+  $PositionInRow: Int
+  $Row: String
+  $payload: AWSJSON
+) {
+  onDeleteSensorIOT(
+    PositionInRow: $PositionInRow
+    Row: $Row
+    payload: $payload
+  ) {
+    PositionInRow
+    Row
+    payload
+  }
+}
+`;

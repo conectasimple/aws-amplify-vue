@@ -77,7 +77,7 @@
               <canvas id="chartTemp" ></canvas>
             </div>
             <div class="col-sm-12 col-xs-12" style="margin-top:15px;height: 250px; overflow: auto;">
-              <p><strong>Temperatura Por Hora</strong></p>
+              <p><strong>Historial Temperatura cada 10 minutos</strong></p>
                <table class="table table-bordered table-condensed table-hover responsive" cellspacing="0" cellpadding ="0">
                 <thead>
                   <tr>
@@ -109,7 +109,7 @@
               <canvas id="chartPh" ></canvas>
             </div> 
             <div class="col-sm-12 col-xs-12" style="margin-top:15px;height: 250px; overflow: auto;">
-              <p><strong>Ph Por Hora</strong></p>
+              <p><strong>Historial Ph cada 10 minutos</strong></p>
                <table class="table table-bordered table-condensed table-hover responsive" cellspacing="0" cellpadding ="0">
                 <thead>
                   <tr>
@@ -139,8 +139,7 @@ import Chart from 'chart.js'
 import Alert from '../widgets/Alert'
 import InfoBox from '../widgets/InfoBox'
 import ProcessInfoBox from '../widgets/ProcessInfoBox'
-import { listSensors } from '../../graphql/queries';
-
+import { listSensorIots } from '../../graphql/queries';
 export default {
   name: 'Dashboard',
   components: {
@@ -149,9 +148,17 @@ export default {
     ProcessInfoBox
   },
   apollo: {
+      /*
       SensorValues: {
-        query: () => listSensors,       
-        update: ({listSensors}) => listSensors.items, 
+        query:listSensors,
+        variables () {
+          return {query: {offset: 0, limit: 10}}
+        }
+      }
+      */
+      SensorValues: {
+        query: () => listSensorIots,    
+        update: ({listSensorIOTS}) => listSensorIOTS.items, 
         variables(){
           let todayIni = new Date();
           todayIni.setHours(0, 0, 0);
@@ -160,13 +167,16 @@ export default {
           let timestampini = Math.floor(todayIni / 1000)
           let timestampfin = Math.floor(todayFin / 1000)  
           this.fechaActual = (todayIni.getDate() + "/" + (todayIni.getMonth() +1) + "/" + todayIni.getFullYear())            
-          return {filter : {PositionInRow: {ge: timestampini,le: timestampfin}}}
-        }, 
+          //return {filter : {PositionInRow: {ge: timestampini,le: timestampfin}}}
+          return {limit:72000,  filter : {PositionInRow: {ge: timestampini}}}
+        },
         result:function({data}){
             this.init()
         },          
         pollInterval: 15000       
-      }
+      },
+      
+
   },
   data () {
     return {
@@ -189,14 +199,14 @@ export default {
     init() {
       let temp = 0
       let ph_ = 0
-      for (let i=0 ; i<this.SensorValues.length;i++){
-          let medidas = JSON.parse(this.SensorValues[i].payload)
-          temp = medidas.temperatura
-          ph_ = medidas.ph
+      if (this.SensorValues.length > 0){
+        let medidas  = JSON.parse(this.SensorValues[this.SensorValues.length-1].payload)
+        temp = medidas.temperatura
+        ph_ = medidas.ph
+        this.Temperatura = temp   
+        this.PH = ph_
+        this.DataAxisY()   
       }
-      this.Temperatura = temp   
-      this.PH = ph_
-      this.DataAxisY()   
     },
     DataAxisY () {  
       var temperaturas = []
@@ -205,45 +215,58 @@ export default {
       var fechaActual = new Date()
       var tempMax = -1
       var phMax = -1
+      var tiempoOffline = 0
+      var date = null
       for (let i=0 ; i<this.SensorValues.length;i++){
         var medidas = JSON.parse(this.SensorValues[i].payload)
-        var date = new Date(medidas.pos*1000);
-        if (date !==null){          
-          if (date.getHours()!=0){
-              if (medidas.temperatura > tempMax){
-                  tempMax = medidas.temperatura 
-              }  
-              if (medidas.ph > phMax){
-                  phMax = medidas.ph  
-              }     
-              map['h' + (date.getHours()).toString()]=tempMax 
-              mapPh['h' + (date.getHours()).toString()]=phMax             
-          }else{
-              if (medidas.temperatura > tempMax){
-                  tempMax = medidas.temperatura  
-              }
-              if (medidas.ph > phMax){
-                  phMax = medidas.ph  
-              }
-              map['h0']=tempMax
-              mapPh['h0']=phMax
-          }          
-          const fill = (number, len) =>
+        date = new Date(medidas.pos*1000);
+        if (date !==null){     
+            /*
+            if (medidas.temperatura > tempMax){
+                tempMax = medidas.temperatura 
+            }  
+            if (medidas.ph > phMax){
+                phMax = medidas.ph  
+            }     
+            map['h' + (date.getHours()).toString()]=tempMax 
+            mapPh['h' + (date.getHours()).toString()]=phMax             
+            */
+            const fill = (number, len) =>
               "0".repeat(len - number.toString().length) + number.toString();
-          this.horaActualizacion = fill(date.getHours(),2) + ':' + fill(date.getMinutes(),2) + ':' + fill(date.getSeconds(),2)          
-          //console.log(this.diff_minutes(date,fechaActual) )
-          if (date.getHours()==fechaActual.getHours()){
-            if (this.diff_minutes(date,fechaActual) == 0 || this.diff_minutes(date,fechaActual) == 1){
-              this.Lectura = true
-              this.status = "online"
-            }
-            else{
-              this.Lectura = false 
-              this.status = "offline"            
-            }
-          }          
+          this.horaActualizacion = fill(date.getHours(),2) + ':' + fill(date.getMinutes(),2) + ':' + fill(date.getSeconds(),2)                     
         }
-      }     
+      } 
+
+      for (let i=0 ; i<this.SensorValues.length;i++){
+          let hora = JSON.parse(this.SensorValues[i].payload).fecha.substring(11,19)
+          var medidas = JSON.parse(this.SensorValues[i].payload)
+          let minutos = hora.split(':')[1]  
+          if (minutos%60!=0){            
+            if (medidas.temperatura > tempMax){
+                tempMax = medidas.temperatura 
+                map['h' + parseInt(hora).toString()]=tempMax 
+            } 
+            if (medidas.ph > phMax){
+                phMax = medidas.ph  
+                mapPh['h' + parseInt(hora).toString()]=phMax     
+            }   
+          }else{
+            tempMax = -1
+            phMax = -1
+          }
+          
+      }        
+      if (date.getHours()==fechaActual.getHours()){
+        if (this.diff_minutes(date,fechaActual) <=2){
+          this.Lectura = true
+          this.status = "online"
+        }
+        else{
+          this.Lectura = false 
+          this.status = "offline"   
+        }
+      }
+          
       //datos temperatura
       if (this.tempData.length>0)
         this.tempData  = [map['h0'],map['h1'],map['h2'],map['h3'],map['h4'],map['h5'],map['h6'],map['h7'],map['h8'],map['h9'],map['h10'],map['h11'],map['h12'],map['h13'],map['h14'],map['h15'],map['h16'],map['h17'],map['h18'],map['h19'],map['h20'],map['h21'],map['h22'],map['h23']]
@@ -303,7 +326,7 @@ export default {
           let minutos = hora.split(':')[1]  
           if (minutos%10==0){
             if (minutos > max_){
-                max_ = minutos
+                //max_ = minutos
                 max_ = SensorValuesAux[i]
             }
           }else{
@@ -316,9 +339,7 @@ export default {
               }
               if (!encontrado && max_!=-1)
                   maxHora.push(max_)
-              max_ = -1
-              //console.log(this.SensorValues[i].PositionInRow)              
-              //console.log(maxHora.PositionInRow)
+              max_ = -1  
           }
       }
       

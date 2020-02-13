@@ -31,7 +31,7 @@
                 "IdentityPoolName": "awsamplifyvuef14ad48e_identitypool_f14ad48e__envamplify",
                 "UserPoolName": "awsamplifyvuef14ad48e_userpool_f14ad48e"
             },
-            "lastPushTimeStamp": "2020-01-30T15:12:17.253Z",
+            "lastPushTimeStamp": "2020-02-06T03:05:40.571Z",
             "providerMetadata": {
                 "s3TemplateURL": "https://s3.amazonaws.com/amplify-aws-amplify-vue-envamplify-20537-deployment/amplify-cfn-templates/auth/awsamplifyvuef14ad48e-cloudformation-template.yml",
                 "logicalId": "authawsamplifyvuef14ad48e"
@@ -48,7 +48,7 @@
                 "Region": "us-east-2",
                 "HostingBucketName": "iot-pool-project-envamplify"
             },
-            "lastPushTimeStamp": "2020-01-30T15:12:17.257Z",
+            "lastPushTimeStamp": "2020-02-06T03:05:40.573Z",
             "providerMetadata": {
                 "s3TemplateURL": "https://s3.amazonaws.com/amplify-aws-amplify-vue-envamplify-20537-deployment/amplify-cfn-templates/hosting/template.json",
                 "logicalId": "hostingS3AndCloudFront"

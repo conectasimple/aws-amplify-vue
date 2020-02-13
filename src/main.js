@@ -36,10 +36,13 @@ const config = {
   }
 }
 
-const options = {
+const options = {  
+  connectToDevTools: true,
   defaultOptions: {
     watchQuery: {
-      fetchPolicy: 'cache-and-network',
+      //fetchPolicy: 'cache-and-network',      
+      fetchPolicy : 'no-cache',
+      errorPolicy: 'ignore',
     }
   }
 }
