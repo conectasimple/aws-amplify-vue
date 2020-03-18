@@ -1,7 +1,6 @@
-/* eslint-disable */
-// this is an auto generated file. This will be overwritten
+import gql from "graphql-tag";
 
-export const createSensor = `mutation CreateSensor($input: CreateSensorInput!) {
+export const createSensor = gql`mutation CreateSensor($input: CreateSensorInput!) {
   createSensor(input: $input) {
     PositionInRow
     Row
@@ -9,7 +8,7 @@ export const createSensor = `mutation CreateSensor($input: CreateSensorInput!) {
   }
 }
 `;
-export const updateSensor = `mutation UpdateSensor($input: UpdateSensorInput!) {
+export const updateSensor = gql`mutation UpdateSensor($input: UpdateSensorInput!) {
   updateSensor(input: $input) {
     PositionInRow
     Row
@@ -17,7 +16,7 @@ export const updateSensor = `mutation UpdateSensor($input: UpdateSensorInput!) {
   }
 }
 `;
-export const deleteSensor = `mutation DeleteSensor($input: DeleteSensorInput!) {
+export const deleteSensor = gql`mutation DeleteSensor($input: DeleteSensorInput!) {
   deleteSensor(input: $input) {
     PositionInRow
     Row
@@ -25,21 +24,21 @@ export const deleteSensor = `mutation DeleteSensor($input: DeleteSensorInput!) {
   }
 }
 `;
-export const createAlarma = `mutation CreateAlarma($input: CreateAlarmaInput!) {
+export const createAlarma = gql`mutation CreateAlarma($input: CreateAlarmaInput!) {
   createAlarma(input: $input) {
     Row
     payload
   }
 }
 `;
-export const updateAlarma = `mutation UpdateAlarma($input: UpdateAlarmaInput!) {
+export const updateAlarma = gql`mutation UpdateAlarma($input: UpdateAlarmaInput!) {
   updateAlarma(input: $input) {
     Row
     payload
   }
 }
 `;
-export const deleteAlarma = `mutation DeleteAlarma($input: DeleteAlarmaInput!) {
+export const deleteAlarma = gql`mutation DeleteAlarma($input: DeleteAlarmaInput!) {
   deleteAlarma(input: $input) {
     Row
     payload
@@ -54,7 +53,7 @@ export const createSensorIot = `mutation CreateSensorIot($input: CreateSensorIOT
   }
 }
 `;
-export const updateSensorIot = `mutation UpdateSensorIot($input: UpdateSensorIOTInput!) {
+export const updateSensorIot = gql`mutation UpdateSensorIot($input: UpdateSensorIOTInput!) {
   updateSensorIOT(input: $input) {
     PositionInRow
     Row
@@ -62,8 +61,32 @@ export const updateSensorIot = `mutation UpdateSensorIot($input: UpdateSensorIOT
   }
 }
 `;
-export const deleteSensorIot = `mutation DeleteSensorIot($input: DeleteSensorIOTInput!) {
+export const deleteSensorIot = gql`mutation DeleteSensorIot($input: DeleteSensorIOTInput!) {
   deleteSensorIOT(input: $input) {
+    PositionInRow
+    Row
+    payload
+  }
+}
+`;
+export const createHistoricoSensorIot = gql`mutation CreateHistoricoSensorIot($input: CreateHistoricoSensorIOTInput!) {
+  createHistoricoSensorIOT(input: $input) {
+    PositionInRow
+    Row
+    payload
+  }
+}
+`;
+export const updateHistoricoSensorIot = `mutation UpdateHistoricoSensorIot($input: UpdateHistoricoSensorIOTInput!) {
+  updateHistoricoSensorIOT(input: $input) {
+    PositionInRow
+    Row
+    payload
+  }
+}
+`;
+export const deleteHistoricoSensorIot = `mutation DeleteHistoricoSensorIot($input: DeleteHistoricoSensorIOTInput!) {
+  deleteHistoricoSensorIOT(input: $input) {
     PositionInRow
     Row
     payload

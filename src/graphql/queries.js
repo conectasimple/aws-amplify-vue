@@ -67,3 +67,30 @@ export const listSensorIots = gql`query ListSensorIots(
   }
 }
 `;
+export const getHistoricoSensorIot = gql`query GetHistoricoSensorIot($Row: String!, $PositionInRow: Int!) {
+  getHistoricoSensorIOT(Row: $Row, PositionInRow: $PositionInRow) {
+    PositionInRow
+    Row
+    payload
+  }
+}
+`;
+export const listHistoricoSensorIots = gql`query ListHistoricoSensorIots(
+  $filter: TableHistoricoSensorIOTFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listHistoricoSensorIOTS(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      PositionInRow
+      Row
+      payload
+    }
+    nextToken
+  }
+}
+`;

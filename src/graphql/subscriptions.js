@@ -106,3 +106,51 @@ export const onDeleteSensorIot = `subscription OnDeleteSensorIot(
   }
 }
 `;
+export const onCreateHistoricoSensorIot = `subscription OnCreateHistoricoSensorIot(
+  $PositionInRow: Int
+  $Row: String
+  $payload: AWSJSON
+) {
+  onCreateHistoricoSensorIOT(
+    PositionInRow: $PositionInRow
+    Row: $Row
+    payload: $payload
+  ) {
+    PositionInRow
+    Row
+    payload
+  }
+}
+`;
+export const onUpdateHistoricoSensorIot = `subscription OnUpdateHistoricoSensorIot(
+  $PositionInRow: Int
+  $Row: String
+  $payload: AWSJSON
+) {
+  onUpdateHistoricoSensorIOT(
+    PositionInRow: $PositionInRow
+    Row: $Row
+    payload: $payload
+  ) {
+    PositionInRow
+    Row
+    payload
+  }
+}
+`;
+export const onDeleteHistoricoSensorIot = `subscription OnDeleteHistoricoSensorIot(
+  $PositionInRow: Int
+  $Row: String
+  $payload: AWSJSON
+) {
+  onDeleteHistoricoSensorIOT(
+    PositionInRow: $PositionInRow
+    Row: $Row
+    payload: $payload
+  ) {
+    PositionInRow
+    Row
+    payload
+  }
+}
+`;

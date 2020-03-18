@@ -1,6 +1,7 @@
 <template>
   <!-- Main content -->
   <section class="content">
+    <!--<h1>{{this.SensorValues.length}}</h1> -->
     <!-- GitHub hint -->    
     <div class="row">
       <div class="col-md-6 col-sm-6 col-xs-12">
@@ -12,7 +13,7 @@
         <div class="info-box">
           <span class="info-box-icon bg-yellow"><i class="ion-thermometer"></i></span>
           <div class="info-box-content">
-            <span class="info-box-text">Temperatura Actual</span>
+            <span class="info-box-text">Temperatura Actual</span> 
             <span class="info-box-number" v-if = "Lectura==true" >{{Temperatura}}°C</span><span class="info-box-number" v-else>--</span>
           </div>
         </div>        
@@ -44,7 +45,7 @@
           <div class="info-box bg-red">
             <span class="info-box-icon"><i class="ion ion-ios-alarm-outline"></i></span> 
             <div class="info-box-content">
-                <span class="info-box-text">Alertar si Temperatura (C°)</span> <span class="info-box-number" v-if="TempAlert==true"><span class="ion-arrow-graph-down-left" style="font-size: 30px;"></span>10 <span class="ion-arrow-graph-up-right" style="font-size: 30px;"></span>30</span> <span class="info-box-number" v-else>--</span>
+                <span class="info-box-text">Alertar si Temperatura (C°)</span> <span class="info-box-number" style="font-size:30px;" v-if="TempAlert==true"><span class="ion-arrow-graph-down-left" style="font-size: 25px;"></span>10 <span class="ion-arrow-graph-up-right" style="font-size: 25px;"></span>30</span> <span class="info-box-number" v-else>--</span>
             </div>
           </div>
         </div>
@@ -52,7 +53,7 @@
           <div class="info-box bg-red">
             <span class="info-box-icon"><i class="ion ion-ios-alarm-outline"></i></span> 
             <div class="info-box-content">
-                <span class="info-box-text">Alertar si PH (Ph)</span> <span class="info-box-number" v-if="PhAlert==true"><span class="ion-arrow-graph-down-left" style="font-size: 30px;"></span>10 <span class="ion-arrow-graph-up-right" style="font-size: 30px;"></span>12</span> <span class="info-box-number" v-else>--</span>
+                <span class="info-box-text">Alertar si PH (Ph)</span> <span class="info-box-number" style="font-size:30px;" v-if="PhAlert==true"><span class="ion-arrow-graph-down-left" style="font-size: 25px;"></span>10.234 <span class="ion-arrow-graph-up-right" style="font-size: 30px;"></span>12.123</span> <span class="info-box-number" v-else>--</span>
             </div>
           </div>
         </div>
@@ -60,7 +61,7 @@
           <div class="info-box bg-red">
             <span class="info-box-icon"><i class="ion ion-ios-alarm-outline"></i></span> 
             <div class="info-box-content">
-                <span class="info-box-text">Alertar si Cloro Libre</span> <span class="info-box-number">--</span>            
+                <span class="info-box-text">Alertar si Cloro Libre</span> <span class="info-box-number" style="font-size:30px;" >--</span>            
             </div>
           </div>
         </div>
@@ -139,26 +140,25 @@ import Chart from 'chart.js'
 import Alert from '../widgets/Alert'
 import InfoBox from '../widgets/InfoBox'
 import ProcessInfoBox from '../widgets/ProcessInfoBox'
-import { listSensorIots } from '../../graphql/queries';
+import { listSensorIots, listHistoricoSensorIots } from '../../graphql/queries';
+import apiHistory from '../../api/index'
+//import config from '../../config'
+
 export default {
   name: 'Dashboard',
   components: {
     Alert,
     InfoBox,
     ProcessInfoBox
-  },
-  apollo: {
-      /*
-      SensorValues: {
-        query:listSensors,
-        variables () {
-          return {query: {offset: 0, limit: 10}}
-        }
-      }
-      */
+  },   
+  apollo: {                     
       SensorValues: {
         query: () => listSensorIots,    
-        update: ({listSensorIOTS}) => listSensorIOTS.items, 
+        //update: ({listSensorIOTS}) => listSensorIOTS.items, 
+        update(data){ 
+          //console.log(data.listSensorIOTS.nextToken)
+          return data.listSensorIOTS.items
+        },
         variables(){
           let todayIni = new Date();
           todayIni.setHours(0, 0, 0);
@@ -167,16 +167,17 @@ export default {
           let timestampini = Math.floor(todayIni / 1000)
           let timestampfin = Math.floor(todayFin / 1000)  
           this.fechaActual = (todayIni.getDate() + "/" + (todayIni.getMonth() +1) + "/" + todayIni.getFullYear())            
-          //return {filter : {PositionInRow: {ge: timestampini,le: timestampfin}}}
-          return {limit:72000,  filter : {PositionInRow: {ge: timestampini}}}
+          //return {limit:72000,  filter : {PositionInRow: {ge: timestampini}}}
+          return {limit:72000,  filter : {PositionInRow: {ge: timestampini}}}     
         },
         result:function({data}){
             this.init()
         },          
         pollInterval: 15000       
       },
-      
-
+  },   
+  created: function () {
+    //this.init()
   },
   data () {
     return {
@@ -189,22 +190,48 @@ export default {
       chartline : null,
       Phline : null,
       horaActualizacion : '--',
-      Lectura:true,
+      Lectura:false,
       TempAlert:true,
       PhAlert:true,
       status : "offline",
+      tokenNext :'',
+      dataSensorsHyst : [],
+      frecuencia : 0,
     }
-  },
+  },   
   methods: {  
     init() {
       let temp = 0
       let ph_ = 0
+      var fechaActual = new Date()
+      var date = null
+      var dateSensor = null
       if (this.SensorValues.length > 0){
         let medidas  = JSON.parse(this.SensorValues[this.SensorValues.length-1].payload)
         temp = medidas.temperatura
         ph_ = medidas.ph
         this.Temperatura = temp   
         this.PH = ph_
+        for (let i=0 ; i<this.SensorValues.length;i++){
+            var jsonItems = JSON.parse(this.SensorValues[i].payload)  
+            date = new Date(jsonItems.pos*1000);
+            if (date !==null){ 
+              const fill = (number, len) =>
+                "0".repeat(len - number.toString().length) + number.toString();
+              this.horaActualizacion = fill(date.getHours(),2) + ':' + fill(date.getMinutes(),2) + ':' + fill(date.getSeconds(),2)                     
+            }          
+            dateSensor = new Date(jsonItems.pos*1000);
+        }    
+        if (dateSensor !=null && dateSensor.getHours()==fechaActual.getHours()){
+          if (this.diff_minutes(dateSensor,fechaActual) <=2){
+            this.Lectura = true
+            this.status = "online"
+          }
+          else{
+            this.Lectura = false 
+            this.status = "offline"             
+          }
+        }   
         this.DataAxisY()   
       }
     },
@@ -217,57 +244,65 @@ export default {
       var phMax = -1
       var tiempoOffline = 0
       var date = null
-      for (let i=0 ; i<this.SensorValues.length;i++){
-        var medidas = JSON.parse(this.SensorValues[i].payload)
-        date = new Date(medidas.pos*1000);
-        if (date !==null){     
-            /*
-            if (medidas.temperatura > tempMax){
-                tempMax = medidas.temperatura 
-            }  
-            if (medidas.ph > phMax){
-                phMax = medidas.ph  
-            }     
-            map['h' + (date.getHours()).toString()]=tempMax 
-            mapPh['h' + (date.getHours()).toString()]=phMax             
-            */
-            const fill = (number, len) =>
-              "0".repeat(len - number.toString().length) + number.toString();
-          this.horaActualizacion = fill(date.getHours(),2) + ':' + fill(date.getMinutes(),2) + ':' + fill(date.getSeconds(),2)                     
-        }
-      } 
-
-      for (let i=0 ; i<this.SensorValues.length;i++){
-          let hora = JSON.parse(this.SensorValues[i].payload).fecha.substring(11,19)
-          var medidas = JSON.parse(this.SensorValues[i].payload)
-          let minutos = hora.split(':')[1]  
-          if (minutos%60!=0){            
-            if (medidas.temperatura > tempMax){
-                tempMax = medidas.temperatura 
-                map['h' + parseInt(hora).toString()]=tempMax 
-            } 
-            if (medidas.ph > phMax){
-                phMax = medidas.ph  
-                mapPh['h' + parseInt(hora).toString()]=phMax     
-            }   
-          }else{
-            tempMax = -1
-            phMax = -1
-          }
-          
-      }        
-      if (date.getHours()==fechaActual.getHours()){
-        if (this.diff_minutes(date,fechaActual) <=2){
-          this.Lectura = true
-          this.status = "online"
-        }
-        else{
-          this.Lectura = false 
-          this.status = "offline"   
-        }
+      var dateSensor = null
+      var dataSensorsAux = []  
+      let now = new Date();
+      console.log(now.getMinutes())
+      if (now.getMinutes()%59==0){
+        console.log('reset')
+        this.frecuencia = 0
       }
-          
-      //datos temperatura
+      if (this.frecuencia<=0)
+        this.loadDataHistory()  
+      for (let i=0 ; i<this.dataSensorsHyst.length;i++){
+          var jsonItems = this.dataSensorsHyst[i].payload
+          dataSensorsAux.push(jsonItems)                    
+      }     
+      let listValues = []
+      for (let i=0 ; i<this.SensorValues.length;i++){
+          var jsonItems = JSON.parse(this.SensorValues[i].payload)  
+          listValues.push(jsonItems)
+      } 
+      if (this.frecuencia<=0 && dataSensorsAux.length>0){
+        dataSensorsAux.push(listValues)
+        this.frecuencia+=1        
+        for (let i=0 ; i<dataSensorsAux.length;i++){
+          let dataItem = dataSensorsAux[i]
+          for (let j=0 ; j<dataItem.length;j++){
+            if (dataItem[j].fecha !== undefined) {                   
+              let hora = dataItem[j].fecha.substring(11,19)
+              var medidas = dataItem[j]
+              let minutos = hora.split(':')[1]  
+              if (minutos%60!=0){            
+                if (medidas.temperatura > tempMax){
+                    tempMax = medidas.temperatura 
+                    map['h' + parseInt(hora).toString()]=tempMax 
+                } 
+                if (medidas.ph > phMax){
+                    phMax = medidas.ph  
+                    mapPh['h' + parseInt(hora).toString()]=phMax     
+                }   
+              }else{
+                tempMax = -1
+                phMax = -1
+              }
+            
+            }
+          }
+        }
+        this.tempData  = [map['h0'],map['h1'],map['h2'],map['h3'],map['h4'],map['h5'],map['h6'],map['h7'],map['h8'],map['h9'],map['h10'],map['h11'],map['h12'],map['h13'],map['h14'],map['h15'],map['h16'],map['h17'],map['h18'],map['h19'],map['h20'],map['h21'],map['h22'],map['h23']]
+        if(this.chartline!==null && this.chartline.data!==null){
+          this.chartline.data.datasets[0].data = this.tempData
+          this.chartline.update()
+          console.log('actualizando grafico')
+        }      
+        this.phData  = [mapPh['h0'],mapPh['h1'],mapPh['h2'],mapPh['h3'],mapPh['h4'],mapPh['h5'],mapPh['h6'],mapPh['h7'],mapPh['h8'],mapPh['h9'],mapPh['h10'],mapPh['h11'],mapPh['h12'],mapPh['h13'],mapPh['h14'],mapPh['h15'],mapPh['h16'],mapPh['h17'],mapPh['h18'],mapPh['h19'],mapPh['h20'],mapPh['h21'],mapPh['h22'],mapPh['h23']]
+        if(this.Phline!==null && this.Phline.data!==null){
+          this.Phline.data.datasets[0].data = this.phData
+          this.Phline.update()
+        }  
+      }
+      /*
       if (this.tempData.length>0)
         this.tempData  = [map['h0'],map['h1'],map['h2'],map['h3'],map['h4'],map['h5'],map['h6'],map['h7'],map['h8'],map['h9'],map['h10'],map['h11'],map['h12'],map['h13'],map['h14'],map['h15'],map['h16'],map['h17'],map['h18'],map['h19'],map['h20'],map['h21'],map['h22'],map['h23']]
       else
@@ -276,10 +311,8 @@ export default {
         this.chartline.data.datasets[0].data = this.tempData
         this.chartline.update()
       }      
-      //fin datos temperatura
-
-      //datos ph
-      if (this.SensorValues.length>0){
+     
+      if (dataSensorsAux.length>0){
         if (this.phData.length>0)
           this.phData  = [mapPh['h0'],mapPh['h1'],mapPh['h2'],mapPh['h3'],mapPh['h4'],mapPh['h5'],mapPh['h6'],mapPh['h7'],mapPh['h8'],mapPh['h9'],mapPh['h10'],mapPh['h11'],mapPh['h12'],mapPh['h13'],mapPh['h14'],mapPh['h15'],mapPh['h16'],mapPh['h17'],mapPh['h18'],mapPh['h19'],mapPh['h20'],mapPh['h21'],mapPh['h22'],mapPh['h23']]
         else
@@ -294,7 +327,7 @@ export default {
         this.PH = '--'
         this.Lectura = false
       }
-      //datos ph
+      */ 
     },
     PhNumbersY () { 
       this.phData = [6,7,5,3,2,1,2,3,4,10,7,7]    
@@ -309,8 +342,48 @@ export default {
       var diff =(dt2.getTime() - dt1.getTime()) / 1000;
       diff /= 60;
       return Math.abs(Math.round(diff));      
-    }
-
+    },
+    loadDataHistory(){     
+      var listValues=[]
+      var lista 
+      let todayIni = new Date();
+      todayIni.setHours(0, 0, 0);
+      let todayFin = new Date();
+      todayFin.setHours(23, 59, 59);
+      let timestampini = Math.floor(todayIni / 1000)
+      let timestampfin = Math.floor(todayFin / 1000)  
+      this.fechaActual = (todayIni.getDate() + "/" + (todayIni.getMonth() +1) + "/" + todayIni.getFullYear())       
+      
+      apiHistory.getHistory("PMPO_device_1")
+      .then(res => {
+          return res.data
+      })
+      .then(data=> {           
+          if (data.statusCode == 200){
+            //console.log(data.body)
+            this.dataSensorsHyst  =  data.body
+            //console.log(this.dataSensorsHyst )
+          }
+      })
+      .catch((err) => console.log(err));  
+      
+      //console.log(valor)
+      /*
+      this.$apollo.query({
+        query: listHistoricoSensorIots,
+        variables : {limit:100000,  filter : {PositionInRow: {gt: 1583982593}}}
+      }).then(data => {     
+        var obj = data.data
+        lista = obj
+        console.log(obj.listHistoricoSensorIOTS.items.length)
+        this.dataSensorsHyst  =  obj.listHistoricoSensorIOTS.items
+      })
+      .catch(error => {
+        this.error = error;
+        console.log("ERROR: " + error);
+      });
+      */
+    },
   },
   computed: {    
     isMobile() {
@@ -326,7 +399,6 @@ export default {
           let minutos = hora.split(':')[1]  
           if (minutos%10==0){
             if (minutos > max_){
-                //max_ = minutos
                 max_ = SensorValuesAux[i]
             }
           }else{

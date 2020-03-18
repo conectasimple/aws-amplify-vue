@@ -20,6 +20,8 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import AppView from './components/App.vue'
 import Amplify from '@aws-amplify/core'
 import awsExports from '@/aws-exports';
+import VueSweetalert2 from 'vue-sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
 
 Amplify.configure(awsExports);
 Vue.prototype.$Amplify = Amplify // <- This line is important
@@ -52,7 +54,7 @@ const appsyncProvider = new VueApollo({
   defaultClient: client
 })
 Vue.use(VueApollo)
-
+Vue.use(VueSweetalert2);
 
 Vue.filter('count', count)
 Vue.filter('domain', domain)
