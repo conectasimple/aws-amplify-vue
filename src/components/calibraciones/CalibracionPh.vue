@@ -76,6 +76,9 @@ export default {
        CalibracionPh4 : '' 
     }
   },
+  created() {
+    localStorage.setItem("idRoute",this.$route.meta.id) 
+  },
   methods: {
     CalibracionPh(valor) { 
         const fill = (number, len) =>

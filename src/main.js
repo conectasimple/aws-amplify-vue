@@ -42,8 +42,8 @@ const options = {
   connectToDevTools: true,
   defaultOptions: {
     watchQuery: {
-      //fetchPolicy: 'cache-and-network',      
-      fetchPolicy : 'no-cache',
+      fetchPolicy: 'cache-and-network',      
+      //fetchPolicy : 'no-cache',
       errorPolicy: 'ignore',
     }
   }

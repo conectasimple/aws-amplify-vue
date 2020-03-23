@@ -10,25 +10,11 @@
 			"StackName": "amplify-aws-amplify-vue-envamplify-20537",
 			"StackId": "arn:aws:cloudformation:us-east-2:505918226464:stack/amplify-aws-amplify-vue-envamplify-20537/2689fa80-2eb0-11ea-83f4-06c94a3c6390",
 			"AmplifyAppId": "d2cji14gaz3xh2"
-		}
-	},
-	"api": {
-		"Iot-Sync-Api": {
-			"service": "AppSync",
-			"output": {
-				"authConfig": {
-					"defaultAuthentication": {
-						"authenticationType": "API_KEY"
-					},
-					"additionalAuthenticationProviders": null
-				},
-				"GraphQLAPIIdOutput": "gcinjfbje5e7xdobcikfccbkga",
-				"GraphQLAPIEndpointOutput": "https://psjb5eava5hgheajor2ncomfdi.appsync-api.us-east-2.amazonaws.com/graphql",
-				"name": "Iot-Sync-Api",
-				"region": "us-east-2",
-				"GraphQLAPIKeyOutput": "da2-khlahrj3sbcjrbi434taoj5x2a"
-			},
-			"lastPushTimeStamp": "2020-01-04T05:07:43.977Z"
+		},
+		"categories": {
+			"auth": {
+				"awsamplifyvuef14ad48e": {}
+			}
 		}
 	},
 	"auth": {
@@ -36,11 +22,6 @@
 			"service": "Cognito",
 			"providerPlugin": "awscloudformation",
 			"dependsOn": [],
-			"providerMetadata": {
-				"s3TemplateURL": "https://s3.amazonaws.com/amplify-aws-amplify-vue-envamplify-20537-deployment/amplify-cfn-templates/auth/awsamplifyvuef14ad48e-cloudformation-template.yml",
-				"logicalId": "authawsamplifyvuef14ad48e"
-			},
-			"lastPushTimeStamp": "2020-01-06T04:45:57.698Z",
 			"output": {
 				"AppClientSecret": "738v4j16hp65jam0fnurq001shqq8jsmasm7kuu1oanfl839g5i",
 				"UserPoolId": "us-east-2_PvBmmOn0E",
@@ -50,6 +31,11 @@
 				"IdentityPoolName": "awsamplifyvuef14ad48e_identitypool_f14ad48e__envamplify",
 				"UserPoolName": "awsamplifyvuef14ad48e_userpool_f14ad48e"
 			},
+			"lastPushTimeStamp": "2020-03-18T19:47:24.632Z",
+			"providerMetadata": {
+				"s3TemplateURL": "https://s3.amazonaws.com/amplify-aws-amplify-vue-envamplify-20537-deployment/amplify-cfn-templates/auth/awsamplifyvuef14ad48e-cloudformation-template.yml",
+				"logicalId": "authawsamplifyvuef14ad48e"
+			},
 			"lastPushDirHash": "WIMrq+xyYlCHIg7H30Nv4vGohLY="
 		}
 	},
@@ -57,16 +43,16 @@
 		"S3AndCloudFront": {
 			"service": "S3AndCloudFront",
 			"providerPlugin": "awscloudformation",
-			"providerMetadata": {
-				"s3TemplateURL": "https://s3.amazonaws.com/amplify-aws-amplify-vue-envamplify-20537-deployment/amplify-cfn-templates/hosting/template.json",
-				"logicalId": "hostingS3AndCloudFront"
-			},
-			"lastPushTimeStamp": "2020-01-06T04:45:57.718Z",
 			"output": {
 				"S3BucketSecureURL": "https://iot-pool-project-envamplify.s3.amazonaws.com",
 				"WebsiteURL": "http://iot-pool-project-envamplify.s3-website.us-east-2.amazonaws.com",
 				"Region": "us-east-2",
 				"HostingBucketName": "iot-pool-project-envamplify"
+			},
+			"lastPushTimeStamp": "2020-03-18T19:47:24.632Z",
+			"providerMetadata": {
+				"s3TemplateURL": "https://s3.amazonaws.com/amplify-aws-amplify-vue-envamplify-20537-deployment/amplify-cfn-templates/hosting/template.json",
+				"logicalId": "hostingS3AndCloudFront"
 			},
 			"lastPushDirHash": "VcdEQ3vOdppX2irDF6DwNCER2WQ="
 		}

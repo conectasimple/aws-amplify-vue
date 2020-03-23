@@ -21,7 +21,7 @@ const routes = [
         alias: '',
         component: DashboardView,
         name: 'Panel de Control',
-        meta: {description: ''}
+        meta: {description: '',id:1}
       }
     ]
   }, 
@@ -34,7 +34,7 @@ const routes = [
         alias: '',
         component: Alertas,
         name: 'Configuración Alertas',
-        meta: {description: ''}
+        meta: {description: '',id:2}
       }
     ] 
   },
@@ -47,14 +47,14 @@ const routes = [
         alias: '',
         component: CalibracionPh,
         name: 'Calibracion Sensor de Ph',
-        meta: {description: ''}
+        meta: {description: '',id:3}
       }
     ]
   }, 
   {
     path: '/calibrations',
     component: CalibracionPh,
-    meta: {description: ''}    
+    meta: {description: '1',id:4}    
   },
   {
     // not found handler

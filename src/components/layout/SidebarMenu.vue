@@ -1,7 +1,7 @@
 <template>
   <ul class="sidebar-menu">
     <li class="header">MENÚ PRINCIPAL</li>
-    <router-link tag="li" class="pageLink" to="/dashboard">
+    <router-link tag="li" class="pageLink" to="/dashboard" >
       <a>
         <i class="fa fa-desktop"></i>
         <span class="page">Panel de Control</span>
@@ -22,7 +22,7 @@
         </span>
       </a>
       <ul class="treeview-menu">
-          <router-link tag="li" class="pageLink" to="/calibrations/ph">
+          <router-link tag="li" class="pageLink"   to="/calibrations/ph">
           <a>
             <i class="ion-beaker"></i> Ph
           </a>
