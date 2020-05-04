@@ -102,7 +102,8 @@ export default {
         update: (store, { data: { UpdateAlarma } }) => {          
           this.$swal.fire({
             icon: 'success',
-            title: 'Cambios Realizados Correctamente'         
+            title: 'Cambios Realizados Correctamente',
+            confirmButtonText: 'Aceptar'         
           })
         },         
       })      

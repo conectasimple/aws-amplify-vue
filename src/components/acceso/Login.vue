@@ -24,9 +24,11 @@
     </div>   
 </div>
 </template>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 
 <script>
 import Auth from '@aws-amplify/auth';
+import Swal from 'sweetalert2'
 
 export default {
   name: 'Home',
@@ -34,13 +36,14 @@ export default {
     return {
        TxtUsuario:'',
        TxtClave:'',
-       Authenticated:true,
+       Authenticated:false,
     }
   },
   methods: {
     Login() {       
         Auth.signIn(this.TxtUsuario, this.TxtClave)
         .then(success => {
+            this.Authenticated=true,
             this.$store.commit('SET_USER', this.TxtUsuario)
             if (window.localStorage) {
               window.localStorage.setItem('user', JSON.stringify(this.TxtUsuario))              
@@ -48,9 +51,13 @@ export default {
             this.$router.push('/dashboard')
           }
         )
-        .catch(err => 
-            this.Authenticated=false            
-        );
+        .catch(function (error) {
+          Swal.fire({
+            title: 'Usuario no Registrado',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+          })
+        });
          
     },
   },

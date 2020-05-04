@@ -79,6 +79,7 @@
             </div>
             <div class="col-sm-12 col-xs-12" style="margin-top:15px;height: 250px; overflow: auto;">
               <p><strong>Historial Temperatura</strong></p>
+               <div v-if="HistorialTomasMedida.length>0">
                <table class="table table-bordered table-condensed table-hover responsive" cellspacing="0" cellpadding ="0">
                 <thead>
                   <tr>
@@ -87,18 +88,16 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <!--
-                  <tr v-for="item in HistorialTomasMedida" v-bind:key="item.PositionInRow">
-                    <td scope="row">{{JSON.parse(item.payload).fecha.substring(11,19)}}</td>
-                    <td>{{JSON.parse(item.payload).temperatura}}</td>
-                  </tr>                 
-                  -->
                   <tr v-for="item in HistorialTomasMedida" v-bind:key="item.PositionInRow">
                     <td scope="row">{{item.fecha.substring(11,19)}}</td>
                     <td>{{item.temperatura}}</td>
                   </tr>                 
                 </tbody>
                 </table>
+                </div>
+                <div v-else>
+                  <p>Sin Información</p>
+                </div>
              </div>
           </div>
         </div>       
@@ -117,6 +116,7 @@
             </div> 
             <div class="col-sm-12 col-xs-12" style="margin-top:15px;height: 250px; overflow: auto;">
               <p><strong>Historial Ph</strong></p>
+               <div v-if="HistorialTomasMedida.length>0">
                <table class="table table-bordered table-condensed table-hover responsive" cellspacing="0" cellpadding ="0">
                 <thead>
                   <tr>
@@ -131,6 +131,10 @@
                   </tr>                 
                 </tbody>
                 </table>
+                </div>
+                <div v-else>
+                  <p>Sin Información</p>
+                </div>
              </div>         
           </div>
         </div>       
@@ -148,7 +152,7 @@ import InfoBox from '../widgets/InfoBox'
 import ProcessInfoBox from '../widgets/ProcessInfoBox'
 import { listSensorIots, listHistoricoSensorIots, listAlarmas, getAlarma } from '../../graphql/queries';
 import apiHistory from '../../api/index'
-//import config from '../../config'
+import moment from 'moment-timezone'
 
 export default {
   name: 'Dashboard',
@@ -284,7 +288,6 @@ export default {
       var dateSensor = null
       var dataSensorsAux = []  
       let now = new Date();
-      //console.log(now.getMinutes())
       if (now.getMinutes()%31==0)
         this.frecuencia = 0
       if (this.frecuencia<=0)
@@ -340,7 +343,7 @@ export default {
     },
     diff_minutes(dt2, dt1) 
     {
-      var diff =(dt2.getTime() - dt1.getTime()) / 1000;
+      var diff =(dt2 - dt1) / 1000;
       diff /= 60;
       return Math.abs(Math.round(diff));      
     },
@@ -350,9 +353,13 @@ export default {
       if (this.SensorValues.length > 0)
         jsonItems = JSON.parse(this.SensorValues[this.SensorValues.length-1].payload)
         dateSensor = new Date(jsonItems.pos*1000);
-      let fechaActual = new Date()
-      if (dateSensor !=null && dateSensor.getHours()==fechaActual.getHours()){
-        if (this.diff_minutes(dateSensor,fechaActual) <=2){
+      let fecha = new Date()
+      let fechaActualCalendario  = moment().tz("America/Santiago").utcOffset(-3)
+      let horaActual = fechaActualCalendario.format().split('T')[1].substring(0,8)
+      let fechaActual = fechaActualCalendario.format('MM-DD-YYYY')
+      var horaFechaServer = new Date(parseInt(fechaActual.substring(6)),parseInt(fechaActual.substring(0,2))-1,parseInt(fechaActual.substring(3,5)),horaActual.substring(0,2),horaActual.substring(3,5),horaActual.substring(6));
+      if (dateSensor !=null){
+        if (this.diff_minutes(dateSensor.getTime(),horaFechaServer.getTime()) <=2){
           this.Lectura = true
           this.status = "online"
         }
@@ -399,12 +406,17 @@ export default {
         let arrayC = []
         let arrayD = []
         let arrayE = []
-        arrayA = this.dataSensorsHist[this.dataSensorsHist.length-3].payload
-        arrayB = this.dataSensorsHist[this.dataSensorsHist.length-2].payload
-        arrayC = this.dataSensorsHist[this.dataSensorsHist.length-1].payload
-        arrayD = arrayA.concat(arrayB)
-        arrayE = arrayD.concat(arrayC)
-        SensorValuesAux = arrayE.reverse() 
+        if (this.dataSensorsHist.length>2)
+          arrayA = this.dataSensorsHist[this.dataSensorsHist.length-3].payload
+        if (this.dataSensorsHist.length>1){
+          arrayB = this.dataSensorsHist[this.dataSensorsHist.length-2].payload        
+          arrayD = arrayA.concat(arrayB)
+        }
+        if (this.dataSensorsHist.length>0){
+          arrayC = this.dataSensorsHist[this.dataSensorsHist.length-1].payload
+          arrayE = arrayD.concat(arrayC)
+          SensorValuesAux = arrayE.reverse() 
+        }
       }
       for (let i  = 0 ; i<SensorValuesAux.length ; i++){                    
           let hora = SensorValuesAux[i].fecha.substring(11,19)
