@@ -19,7 +19,7 @@
     "aws-amplify-vue": "^1.1.2",
     "aws-appsync": "^3.0.2",
     "aws-sdk": "^2.601.0",
-    "axios": "^0.15.3",
+    "axios": "^0.21.1",
     "babel-runtime": "^5.8.0",
     "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.2.0",
